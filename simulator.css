@@ -1,0 +1,260 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  transition: background-color 0.3s ease;
+  color: #0f1419;
+}
+.input-section {
+  height: 100vh;
+  overflow-y: auto;
+}
+.preview-section {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f2f5;
+  transition: background-color 0.3s ease;
+}
+.post-preview {
+  width: 500px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.facebook-theme {
+  background-color: #f0f2f5;
+}
+.facebook-theme .post-preview {
+  border-radius: 8px;
+}
+
+.twitter-theme {
+  background-color: #ffffff;
+}
+.twitter-theme .post-preview {
+  border: 1px solid #e1e8ed;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.threads-theme {
+  background-color: #ffffff;
+}
+.threads-theme .post-preview {
+  border: 1px solid #d8d8d8;
+  box-shadow: none;
+  border-radius: 12px;
+}
+
+.mention,
+.hashtag {
+  color: #1b74e4;
+  font-weight: normal;
+}
+
+#facebook-post-preview .mention,
+#facebook-post-preview .hashtag {
+  color: #056be1;
+}
+#twitter-post-preview .mention,
+#twitter-post-preview .hashtag {
+  color: #1d9bf0;
+}
+#threads-post-preview .mention,
+#threads-post-preview .hashtag {
+  color: #0095f6;
+}
+
+.input-section::-webkit-scrollbar {
+  display: none;
+}
+.input-section {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.profile-pic-preview,
+.post-image-preview-in-post {
+  -o-object-fit: cover;
+  object-fit: cover;
+  background-color: #f0f2f5;
+}
+#profile-pic-display {
+  -o-object-fit: cover;
+  object-fit: cover;
+  background-color: #e2e8f0;
+}
+#post-image-display {
+  -o-object-fit: contain;
+  object-fit: contain;
+  background-color: #e2e8f0;
+}
+
+.post-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 1.45;
+}
+
+.svg-icon {
+  display: inline-block;
+  vertical-align: middle;
+  fill: currentColor;
+}
+.fb-sprite-icon {
+  background-image: url("./pic/olX2yf1iinG.png");
+  background-size: auto;
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.facebook-post,
+.twitter-post,
+.threads-post {
+  display: none;
+  padding: 12px 16px;
+}
+
+.facebook-post .username {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #050505;
+}
+.facebook-post .post-meta {
+  font-size: 0.8125rem;
+  color: #65676b;
+}
+.facebook-post .post-meta .svg-icon {
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-left: 4px;
+  fill: #65676b;
+}
+.facebook-post .stats {
+  font-size: 0.875rem;
+  color: #65676b;
+  border-bottom: 1px solid #e4e6eb;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+}
+.facebook-post .stats .stat-item {
+  margin-right: 10px;
+  cursor: pointer;
+}
+.facebook-post .stats .stat-item:hover {
+  text-decoration: underline;
+}
+/* .facebook-post .stats .fb-reactions-icon { width: 18px; height: 18px; margin-right:4px; vertical-align: text-bottom;} Removed, replaced by img tag */
+.facebook-post .actions .action-item {
+  color: #606770;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 8px 4px;
+}
+.facebook-post .post-image-container {
+  margin-left: -16px;
+  margin-right: -16px;
+}
+.facebook-post .post-image-preview-in-post {
+  max-height: 500px;
+  width: 100%;
+  display: block;
+}
+
+.twitter-post .username {
+  font-weight: bold;
+  font-size: 0.9375rem;
+  color: #0f1419;
+}
+.twitter-post .userid {
+  font-size: 0.9375rem;
+  color: #536471;
+  font-weight: normal;
+}
+.twitter-post .post-time {
+  font-size: 0.9375rem;
+  color: #536471;
+}
+.twitter-post .header-dot {
+  color: #536471;
+  margin: 0 4px;
+  font-size: 0.8em;
+}
+.twitter-post .stats .stat-item {
+  font-size: 0.8125rem;
+  color: #536471;
+  margin-right: 20px;
+}
+.twitter-post .stats .svg-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  fill: #536471;
+}
+.twitter-post .post-image-preview-in-post {
+  border-radius: 12px;
+  border: 1px solid #cfd9de;
+  max-height: 450px;
+  width: 100%;
+  display: block;
+}
+
+.threads-post .username {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #000000;
+}
+.threads-post .post-time {
+  font-size: 0.9375rem;
+  color: #737373;
+}
+.threads-post .stats .stat-item {
+  font-size: 0.9375rem;
+  color: #737373;
+}
+.threads-post .stats .stat-separator {
+  margin: 0 6px;
+  color: #c7c7c7;
+}
+.threads-post .actions .svg-icon {
+  width: 22px;
+  height: 22px;
+  stroke: #000000;
+  fill: none;
+  stroke-width: 1.5;
+}
+.threads-post .actions .svg-icon.filled-heart {
+  fill: red;
+  stroke: red;
+}
+.threads-post .post-image-preview-in-post {
+  border-radius: 10px;
+  max-height: 480px;
+  width: 100%;
+  display: block;
+}
+.threads-post .content-wrapper {
+  margin-left: calc(2.5rem + 12px);
+}
+.threads-post .top-right-icons .svg-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 16px;
+  fill: #000000;
+}
+
+.verified-badge {
+  width: 1em;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: baseline;
+}
+.hidden-input-container {
+  display: none;
+}

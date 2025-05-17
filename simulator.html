@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>社群貼文模擬器</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="simulator.css"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <div class="d-flex flex-wrap flex-md-nowrap">
+      <div
+        class="w-full md:w-1/3 bg-white p-4 space-y-4 input-section border-end border-gray-300"
+      >
+        <h2 class="text-2xl fw-bold mb-5 text-gray-700">社群貼文模擬器</h2>
+
+        <div>
+          <label class="form-label d-block text-sm fw-medium text-gray-700"
+            >選擇平台</label
+          >
+          <div class="mt-1 d-flex space-x-4">
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input platform-select"
+                type="radio"
+                name="platform"
+                id="platformFacebook"
+                value="facebook"
+                checked
+              />
+              <label
+                class="form-check-label"
+                for="platformFacebook"
+                >Facebook</label
+              >
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input platform-select"
+                type="radio"
+                name="platform"
+                id="platformTwitter"
+                value="twitter"
+              />
+              <label
+                class="form-check-label"
+                for="platformTwitter"
+                >X (Twitter)</label
+              >
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input platform-select"
+                type="radio"
+                name="platform"
+                id="platformThreads"
+                value="threads"
+              />
+              <label
+                class="form-check-label"
+                for="platformThreads"
+                >Threads</label
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="username"
+            class="form-label text-sm fw-medium text-gray-700"
+            >使用者名稱</label
+          >
+          <input
+            type="text"
+            id="username"
+            value="範例使用者"
+            class="form-control form-control-sm shadow-sm border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div
+          id="userid-container"
+          class="mb-3 hidden-input-container"
+        >
+          <label
+            for="userid"
+            class="form-label text-sm fw-medium text-gray-700"
+            >使用者代號 (@帳號)</label
+          >
+          <input
+            type="text"
+            id="userid"
+            value="@exampleuser"
+            class="form-control form-control-sm shadow-sm border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="profile-pic"
+            class="form-label text-sm fw-medium text-gray-700"
+            >頭貼圖片</label
+          >
+          <input
+            type="file"
+            id="profile-pic"
+            accept="image/*"
+            class="form-control form-control-sm"
+          />
+          <img
+            id="profile-pic-display"
+            src="./pic/profile_default.jpg"
+            alt="Profile Pic Preview"
+            class="mt-2 w-12 h-12 rounded-circle border border-gray-300"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="post-content"
+            class="form-label text-sm fw-medium text-gray-700"
+            >貼文內容</label
+          >
+          <textarea
+            id="post-content"
+            rows="4"
+            class="form-control form-control-sm shadow-sm border-gray-300 rounded-md"
+          >
+這是一段 #範例 貼文內容，提及 @使用者名稱。
+歡迎使用 #社群模擬器 來測試您的 @創意貼文！
+今天是 {current_date}。
+</textarea
+          >
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="post-image"
+            class="form-label text-sm fw-medium text-gray-700"
+            >貼文圖片 (選填)</label
+          >
+          <input
+            type="file"
+            id="post-image"
+            accept="image/*"
+            class="form-control form-control-sm"
+          />
+          <img
+            id="post-image-display"
+            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+            alt="Post Image Preview"
+            class="mt-2 w-100"
+            style="
+              max-height: 12rem;
+              opacity: 0.3;
+              border-radius: 0.25rem;
+              border: 1px solid #dee2e6;
+            "
+          />
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="post-time"
+            class="form-label text-sm fw-medium text-gray-700"
+            >貼文時間</label
+          >
+          <input
+            type="text"
+            id="post-time"
+            value="1小時前"
+            class="form-control form-control-sm shadow-sm border-gray-300 rounded-md"
+          />
+          <div class="mt-1">
+            <button
+              id="set-current-time"
+              class="btn btn-sm btn-outline-secondary py-1 px-2 me-2"
+            >
+              填入現在時間
+            </button>
+            <button
+              id="set-random-time"
+              class="btn btn-sm btn-outline-secondary py-1 px-2"
+            >
+              隨機產生時間
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col">
+            <label
+              for="views"
+              class="form-label text-sm fw-medium text-gray-700"
+              >瀏覽數</label
+            >
+            <input
+              type="number"
+              id="views"
+              value="10000"
+              min="0"
+              class="form-control form-control-sm shadow-sm border-gray-300 rounded-md"
+            />
+          </div>
+          <div class="col">
+            <label
+              for="likes"
+              class="form-label text-sm fw-medium text-gray-700"
+              >按讚數</label
+            >
+            <input
+              type="number"
+              id="likes"
+              value="1200"
+              min="0"
+              class="form-control form-control-sm shadow-sm border-gray-300 rounded-md"
+            />
+          </div>
+          <div class="col">
+            <label
+              for="comments"
+              class="form-label text-sm fw-medium text-gray-700"
+              >留言數</label
+            >
+            <input
+              type="number"
+              id="comments"
+              value="80"
+              min="0"
+              class="form-control form-control-sm shadow-sm border-gray-300 rounded-md"
+            />
+          </div>
+          <div class="col">
+            <label
+              for="shares"
+              id="shares-label"
+              class="form-label text-sm fw-medium text-gray-700"
+              >分享/轉發數</label
+            >
+            <input
+              type="number"
+              id="shares"
+              value="50"
+              min="0"
+              class="form-control form-control-sm shadow-sm border-gray-300 rounded-md"
+            />
+          </div>
+        </div>
+        <button
+          id="randomize-stats"
+          class="btn btn-success w-100 py-2 mb-3"
+        >
+          一鍵隨機產生互動數
+        </button>
+        <button
+          id="download-screenshot"
+          class="btn btn-primary w-100 py-2"
+        >
+          下載模擬截圖
+        </button>
+      </div>
+
+      <div
+        id="preview-area"
+        class="w-full md:w-2/3 preview-section facebook-theme"
+      >
+        <div
+          id="post-preview-container"
+          class="post-preview"
+        >
+          <div
+            id="facebook-post-preview"
+            class="facebook-post"
+          >
+            <div class="d-flex align-items-start mb-2">
+              <img
+                id="fb-profile-pic"
+                alt="Profile"
+                class="w-10 h-10 rounded-circle me-3 profile-pic-preview"
+              />
+              <div class="flex-grow-1">
+                <div
+                  class="username"
+                  id="fb-username"
+                ></div>
+                <div class="post-meta d-flex align-items-center">
+                  <span
+                    class="post-time"
+                    id="fb-post-time"
+                  ></span>
+                  <span class="mx-1">·</span>
+                  <svg
+                    class="svg-icon"
+                    viewBox="0 0 16 16"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                  >
+                    <g
+                      fill-rule="evenodd"
+                      transform="translate(-448 -544)"
+                    >
+                      <g>
+                        <path
+                          d="M109.5 408.5c0 3.23-2.04 5.983-4.903 7.036l.07-.036c1.167-1 1.814-2.967 2-3.834.214-1 .303-1.3-.5-1.96-.31-.253-.677-.196-1.04-.476-.246-.19-.356-.59-.606-.73-.594-.337-1.107.11-1.954.223a2.666 2.666 0 0 1-1.15-.123c-.007 0-.007 0-.013-.004l-.083-.03c-.164-.082-.077-.206.006-.36h-.006c.086-.17.086-.376-.05-.529-.19-.214-.54-.214-.804-.224-.106-.003-.21 0-.313.004l-.003-.004c-.04 0-.084.004-.124.004h-.037c-.323.007-.666-.034-.893-.314-.263-.353-.29-.733.097-1.09.28-.26.863-.8 1.807-.22.603.37 1.166.667 1.666.5.33-.11.48-.303.094-.87a1.128 1.128 0 0 1-.214-.73c.067-.776.687-.84 1.164-1.2.466-.356.68-.943.546-1.457-.106-.413-.51-.873-1.28-1.01a7.49 7.49 0 0 1 6.524 7.434"
+                          transform="translate(354 143.5)"
+                        />
+                        <path
+                          d="M104.107 415.696A7.498 7.498 0 0 1 94.5 408.5a7.48 7.48 0 0 1 3.407-6.283 5.474 5.474 0 0 0-1.653 2.334c-.753 2.217-.217 4.075 2.29 4.075.833 0 1.4.561 1.333 2.375-.013.403.52 1.78 2.45 1.89.7.04 1.184 1.053 1.33 1.74.06.29.127.65.257.97a.174.174 0 0 0 .193.096"
+                          transform="translate(354 143.5)"
+                        />
+                        <path
+                          fill-rule="nonzero"
+                          d="M110 408.5a8 8 0 1 1-16 0 8 8 0 0 1 16 0zm-1 0a7 7 0 1 0-14 0 7 7 0 0 0 14 0z"
+                          transform="translate(354 143.5)"
+                        />
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="ms-auto ps-2">
+                <svg
+                  class="svg-icon w-5 h-5 text-gray-600"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div
+              class="post-content mb-2"
+              id="fb-post-content"
+            ></div>
+            <div class="post-image-container my-2">
+              <img
+                id="fb-post-image"
+                alt="Post image"
+                class="post-image-preview-in-post"
+                style="display: none"
+              />
+            </div>
+            <div
+              class="stats d-flex justify-content-between align-items-center"
+            >
+              <div class="d-flex align-items-center">
+                <img
+                  height="18"
+                  width="18"
+                  src="data:image/svg+xml,%3Csvg fill='none' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M16.0001 7.9996c0 4.418-3.5815 7.9996-7.9995 7.9996S.001 12.4176.001 7.9996 3.5825 0 8.0006 0C12.4186 0 16 3.5815 16 7.9996Z' fill='url(%23paint0_linear_15251_63610)'/%3E%3Cpath d='M16.0001 7.9996c0 4.418-3.5815 7.9996-7.9995 7.9996S.001 12.4176.001 7.9996 3.5825 0 8.0006 0C12.4186 0 16 3.5815 16 7.9996Z' fill='url(%23paint1_radial_15251_63610)'/%3E%3Cpath d='M16.0001 7.9996c0 4.418-3.5815 7.9996-7.9995 7.9996S.001 12.4176.001 7.9996 3.5825 0 8.0006 0C12.4186 0 16 3.5815 16 7.9996Z' fill='url(%23paint2_radial_15251_63610)' fill-opacity='.5'/%3E%3Cpath d='M7.3014 3.8662a.6974.6974 0 0 1 .6974-.6977c.6742 0 1.2207.5465 1.2207 1.2206v1.7464a.101.101 0 0 0 .101.101h1.7953c.992 0 1.7232.9273 1.4917 1.892l-.4572 1.9047a2.301 2.301 0 0 1-2.2374 1.764H6.9185a.5752.5752 0 0 1-.5752-.5752V7.7384c0-.4168.097-.8278.2834-1.2005l.2856-.5712a3.6878 3.6878 0 0 0 .3893-1.6509l-.0002-.4496ZM4.367 7a.767.767 0 0 0-.7669.767v3.2598a.767.767 0 0 0 .767.767h.767a.3835.3835 0 0 0 .3835-.3835V7.3835A.3835.3835 0 0 0 5.134 7h-.767Z' fill='%23fff'/%3E%3Cdefs%3E%3CradialGradient id='paint1_radial_15251_63610' cx='0' cy='0' r='1' gradientUnits='userSpaceOnUse' gradientTransform='rotate(90 .0005 8) scale(7.99958)'%3E%3Cstop offset='.5618' stop-color='%230866FF' stop-opacity='0'/%3E%3Cstop offset='1' stop-color='%230866FF' stop-opacity='.1'/%3E%3C/radialGradient%3E%3CradialGradient id='paint2_radial_15251_63610' cx='0' cy='0' r='1' gradientUnits='userSpaceOnUse' gradientTransform='rotate(45 -4.5257 10.9237) scale(10.1818)'%3E%3Cstop offset='.3143' stop-color='%2302ADFC'/%3E%3Cstop offset='1' stop-color='%2302ADFC' stop-opacity='0'/%3E%3C/radialGradient%3E%3ClinearGradient id='paint0_linear_15251_63610' x1='2.3989' y1='2.3999' x2='13.5983' y2='13.5993' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%2302ADFC'/%3E%3Cstop offset='.5' stop-color='%230866FF'/%3E%3Cstop offset='1' stop-color='%232B7EFF'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E"
+                  class="me-1"
+                  style="vertical-align: text-bottom"
+                />
+                <span
+                  id="fb-likes-count-val"
+                  class="stat-item"
+                ></span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span
+                  id="fb-comments-count-val"
+                  class="stat-item"
+                ></span>
+                <span
+                  id="fb-shares-count-val"
+                  class="stat-item"
+                ></span>
+                <span
+                  id="fb-views-count-val"
+                  class="stat-item"
+                ></span>
+              </div>
+            </div>
+            <div
+              class="actions d-flex justify-content-around border-top border-secondary-subtle pt-1 mt-1"
+            >
+              <div
+                class="action-item flex-fill text-center cursor-pointer p-2 hover-bg-gray-100 rounded-md d-flex align-items-center justify-content-center"
+              >
+                <i
+                  class="fb-sprite-icon"
+                  style="background-position: 0px -798px"
+                ></i>
+                <span class="ms-2">讚</span>
+              </div>
+              <div
+                class="action-item flex-fill text-center cursor-pointer p-2 hover-bg-gray-100 rounded-md d-flex align-items-center justify-content-center"
+              >
+                <i
+                  class="fb-sprite-icon"
+                  style="background-position: 0px -588px"
+                ></i>
+                <span class="ms-2">留言</span>
+              </div>
+              <div
+                class="action-item flex-fill text-center cursor-pointer p-2 hover-bg-gray-100 rounded-md d-flex align-items-center justify-content-center"
+              >
+                <i
+                  class="fb-sprite-icon"
+                  style="background-position: 0px -924px"
+                ></i>
+                <span class="ms-2">分享</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="twitter-post-preview"
+            class="twitter-post"
+          >
+            <div class="d-flex">
+              <img
+                id="tw-profile-pic"
+                alt="Profile"
+                class="w-12 h-12 rounded-circle me-3 profile-pic-preview"
+              />
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-baseline">
+                    <span
+                      class="username"
+                      id="tw-username"
+                    ></span>
+                    <span
+                      class="userid ms-1"
+                      id="tw-userid"
+                    ></span>
+                    <span class="header-dot">·</span>
+                    <span
+                      class="post-time"
+                      id="tw-post-time"
+                    ></span>
+                  </div>
+                  <svg
+                    class="svg-icon w-5 h-5 text-gray-500"
+                    viewBox="0 0 24 24"
+                  >
+                    <g>
+                      <path
+                        d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"
+                      ></path>
+                    </g>
+                  </svg>
+                </div>
+                <div
+                  class="post-content mt-1"
+                  id="tw-post-content"
+                ></div>
+                <img
+                  id="tw-post-image"
+                  alt="Post image"
+                  class="post-image-preview-in-post mt-2 mb-2"
+                  style="display: none"
+                />
+                <div class="stats d-flex align-items-center text-gray-500 mt-3">
+                  <span
+                    id="tw-comments-count"
+                    class="stat-item d-flex align-items-center"
+                    ><svg
+                      class="svg-icon"
+                      viewBox="0 0 24 24"
+                    >
+                      <g>
+                        <path
+                          d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.9-1.554 5.502-4.008 6.926L20.75 22l-3.786-2.09c-1.006.313-2.06.486-3.13.486H9.756c-4.42 0-8.005-3.58-8.005-8zm8.005-6c-3.317 0-6.005 2.682-6.005 6 0 3.316 2.688 6 6.005 6h4.366c3.392 0 6.129-2.738 6.129-6.13S17.507 3.87 14.12 3.87H9.756z"
+                        ></path>
+                      </g></svg
+                    ><span class="count-val ms-1"></span
+                  ></span>
+                  <span
+                    id="tw-shares-count"
+                    class="stat-item d-flex align-items-center"
+                    ><svg
+                      class="svg-icon"
+                      viewBox="0 0 24 24"
+                    >
+                      <g>
+                        <path
+                          d="M17.03 6.57L12.378 2.055a.738.738 0 00-1.063-.017L6.57 6.57h3.18v5.81h4.5V6.57h2.78zm4.418 7.308a.739.739 0 00-1.064 0l-4.743 4.623h2.872V24h4.5v-5.5h3.18l-4.745-4.622zM6.57 17.43l-4.744 4.622a.738.738 0 000 1.063l.09.087a.738.738 0 00.973 0l4.744-4.623H4.5V12.68H0V6.57h4.5V0h6.75v6.57H17.43L12.878 2.055a.738.738 0 00-1.063-.017L7.07 6.57H4.5v6.11h3.135l-.942-.917a.74.74 0 00-1.123.972z"
+                        ></path>
+                      </g></svg
+                    ><span class="count-val ms-1"></span
+                  ></span>
+                  <span
+                    id="tw-likes-count"
+                    class="stat-item d-flex align-items-center"
+                    ><svg
+                      class="svg-icon"
+                      viewBox="0 0 24 24"
+                    >
+                      <g>
+                        <path
+                          d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 4.237 1.335 5.601 3.425l.048.072.048-.072c1.365-2.09 3.312-3.425 5.601-3.425 2.878 0 5.403 2.69 5.403 5.754 0 6.376-7.454 13.11-10.036 13.158H12zm10.05-13.16c0-2.5-1.933-4.253-4.902-4.253-2.005 0-3.654 1.21-4.656 2.935l-.468.795-.468-.795c-1.002-1.725-2.651-2.935-4.656-2.935C5.384 4.225 3.45 5.978 3.45 8.478c0 5.352 6.212 11.122 8.55 11.647 2.338-.525 8.55-6.295 8.55-11.647z"
+                        ></path>
+                      </g></svg
+                    ><span class="count-val ms-1"></span
+                  ></span>
+                  <span
+                    id="tw-views-count"
+                    class="stat-item d-flex align-items-center"
+                    ><svg
+                      class="svg-icon"
+                      viewBox="0 0 24 24"
+                    >
+                      <g>
+                        <path
+                          d="M8.75 21V3h2v18h-2zm9.25-12.5V3h2v5.5h-2zM4 21V13h2v8H4zm14.25 0V10.5h2V21h-2zM13 21V3h2v18h-2z"
+                        ></path>
+                      </g></svg
+                    ><span class="count-val ms-1"></span
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="threads-post-preview"
+            class="threads-post"
+          >
+            <div
+              class="post-header d-flex justify-content-between align-items-center mb-1"
+            >
+              <div class="d-flex align-items-center">
+                <img
+                  id="th-profile-pic"
+                  alt="Profile"
+                  class="w-10 h-10 rounded-circle me-3 profile-pic-preview"
+                />
+                <span
+                  class="username"
+                  id="th-username"
+                ></span>
+              </div>
+              <div class="top-right-icons d-flex align-items-center">
+                <span
+                  class="post-time"
+                  id="th-post-time"
+                ></span>
+                <svg
+                  class="svg-icon ms-3"
+                  viewBox="0 0 24 24"
+                >
+                  <g>
+                    <path
+                      d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"
+                    ></path>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <div class="content-wrapper">
+              <div
+                class="post-content"
+                id="th-post-content"
+              ></div>
+              <img
+                id="th-post-image"
+                alt="Post image"
+                class="post-image-preview-in-post mt-2 mb-3 w-100"
+                style="display: none"
+              />
+              <div class="actions d-flex space-x-4 mt-2 mb-2">
+                <svg
+                  class="svg-icon threads-heart"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M16.792 3.904A4.989 4.989 0 0121.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 014.708-5.218 4.21 4.21 0 013.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.763a4.11 4.11 0 013.675-1.941zM1.903 9.122c0 3.643 2.967 5.699 5.768 8.263 2.135 1.954 3.356 3.003 3.638 3.178.242-.16.986-.805 3.638-3.178 2.838-2.598 5.768-4.654 5.768-8.263a5.989 5.989 0 00-5.708-6.218 5.127 5.127 0 00-4.175 2.341c-.91 1.276-1.154 1.952-1.428 2.341a5.13 5.13 0 00-4.175-2.341A5.989 5.989 0 001.903 9.122z"
+                  ></path>
+                </svg>
+                <svg
+                  class="svg-icon threads-comment"
+                  viewBox="0 0 24 24"
+                  style="transform: scaleX(-1)"
+                >
+                  <path
+                    d="M10 18.253a8.25 8.25 0 110-16.5 8.25 8.25 0 010 16.5zm0-1.5a6.75 6.75 0 100-13.5 6.75 6.75 0 000 13.5zm5.606-4.03a.75.75 0 10-1.06-1.061l-2.796 2.796a.75.75 0 000 1.06l2.796 2.796a.75.75 0 001.06-1.06L13.31 15.22l2.295-2.296z"
+                  ></path>
+                </svg>
+                <svg
+                  class="svg-icon threads-repost"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M19.708 7.292a1 1 0 00-1.414 0L12 13.586l-6.292-6.294a1 1 0 10-1.414 1.414L10.586 15H4a1 1 0 100 2h6.586l-6.294 6.292a1 1 0 001.414 1.414L12 18.414l6.292 6.294a1 1 0 001.414-1.414L13.414 17H20a1 1 0 100-2h-6.586l6.294-6.292a1 1 0 000-1.416z"
+                  ></path>
+                </svg>
+                <svg
+                  class="svg-icon threads-share"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M22 2L2 9.5l7.5 2L12 19l7.5-17zM12 16.5L9 12l-5.5-1.5L19.5 4.5 12 16.5z"
+                  ></path>
+                </svg>
+              </div>
+              <div class="stats text-sm text-gray-500">
+                <span
+                  id="th-comments-count"
+                  class="stat-item cursor-pointer hover:underline"
+                ></span>
+                <span class="stat-separator">·</span>
+                <span
+                  id="th-likes-count"
+                  class="stat-item cursor-pointer hover:underline"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script src="simulator.js"></script>
+  </body>
+</html>
