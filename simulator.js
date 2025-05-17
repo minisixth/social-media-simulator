@@ -267,6 +267,21 @@ $(document).ready(function () {
           // 在克隆 DOM 時進行一些清理或調整
           // 例如，如果發現某些 Tailwind 或 Bootstrap 的 class 影響截圖，可以在這裡移除或修改
           // $(clonedDoc).find('.some-problematic-class').css('some-attribute', 'some-value');
+          console.log("Cloned document:", clonedDoc);
+          $(clonedDoc)
+            .find("img")
+            .each(function (index, imgElement) {
+              console.log(
+                `Cloned img ${index} src: <span class="math-inline">\{</span>(imgElement).attr('src')}`
+              );
+            });
+          $(clonedDoc)
+            .find(".fb-sprite-icon")
+            .each(function (index, divElement) {
+              console.log(
+                `Cloned .fb-sprite-icon ${index} background-image: <span class="math-inline">\{</span>(divElement).css('background-image')}`
+              );
+            });
         }
       })
         .then((canvas) => {
