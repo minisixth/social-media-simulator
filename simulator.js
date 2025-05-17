@@ -264,27 +264,111 @@ $(document).ready(function () {
         scale: 2,
         logging: true, // 開啟日誌，方便在控制台查看 html2canvas 的處理過程
         onclone: function (clonedDoc) {
-          // 在克隆 DOM 時進行一些清理或調整
-          // 例如，如果發現某些 Tailwind 或 Bootstrap 的 class 影響截圖，可以在這裡移除或修改
-          // $(clonedDoc).find('.some-problematic-class').css('some-attribute', 'some-value');
-          console.log("Cloned document:", clonedDoc);
-          $(clonedDoc)
-            .find("img")
-            .each(function (index, imgElement) {
-              console.log(
-                `Cloned img ${index} src: <span class="math-inline">\{</span>(imgElement).attr('src')}`
-              );
+          console.log("html2canvas: onclone started.");
+          const base = new URL(window.location.href);
+
+          // Helper function to convert relative URL to absolute
+          function toAbsoluteURL(url) {
+            if (url && !url.startsWith('data:') && !url.startsWith('http') && !url.startsWith('blob:')) {
+              try {
+                // Create a URL object relative to the document's base URL
+                return new URL(url, base).href;
+              } catch (e) {
+                console.warn(`html2canvas: Could not convert to absolute URL: ${url}`, e);
+                return url; // Fallback to original if conversion fails
+              }
+            }
+            return url;
+          }
+
+          // Process <img> tags
+          $(clonedDoc).find("img").each(function (index, imgElement) {
+            const $img = $(imgElement);
+            let originalSrc = $img.attr('src');
+            if (originalSrc) {
+              let absoluteSrc = toAbsoluteURL(originalSrc);
+              if (absoluteSrc !== originalSrc) {
+                $img.attr('src', absoluteSrc);
+                console.log(`html2canvas: Cloned img[${index}] src updated from "${originalSrc ? originalSrc.substring(0,60) : 'null'}" to "${absoluteSrc ? absoluteSrc.substring(0,60) : 'null'}"`);
+              } else {
+                console.log(`html2canvas: Cloned img[${index}] src (already absolute or data/blob): "${originalSrc ? originalSrc.substring(0,60) : 'null'}"`);
+              }
+            } else {
+               console.log(`html2canvas: Cloned img[${index}] has no src.`);
+            }
+          });
+
+          // Process elements with background-image, specifically .fb-sprite-icon
+          $(clonedDoc).find("*").filter(function() {
+            return $(this).css('background-image') !== 'none';
+          }).each(function (index, element) {
+            const $el = $(element);
+            let originalBgImage = $el.css('background-image');
+            
+            // Extract URL from 'url("...")'
+            const urlMatch = originalBgImage.match(/url\("?([^"]+)"?\)/);
+            if (urlMatch && urlMatch[1]) {
+              let originalUrl = urlMatch[1];
+              let absoluteUrl = toAbsoluteURL(originalUrl);
+
+              if (absoluteUrl !== originalUrl) {
+                let newBgImage = originalBgImage.replace(originalUrl, absoluteUrl);
+                $el.css('background-image', newBgImage);
+                console.log(`html2canvas: Element[${index}] bg-image updated from "${originalUrl.substring(0,60)}" to "${absoluteUrl.substring(0,60)}"`);
+              } else {
+                 console.log(`html2canvas: Element[${index}] bg-image URL (already absolute or data/blob): "${originalUrl.substring(0,60)}"`);
+              }
+
+              if ($el.hasClass('fb-sprite-icon')) {
+                const currentBgSize = $el.css('background-size');
+                $el.css('background-size', currentBgSize && currentBgSize !== '0px 0px' ? currentBgSize : 'auto');
+                console.log(`html2canvas: Ensured background-size: ${$el.css('background-size')} for fb-sprite-icon[${index}]`);
+              }
+            }
+          });
+
+          // --- BEGIN SVG POSITIONING FIXES ---
+
+          // 1. Fix for the "globe" icon after the timestamp in Facebook posts
+          const fbPostMetaIcon = $(clonedDoc).find('#facebook-post-preview .post-meta .svg-icon');
+          if (fbPostMetaIcon.length) {
+            // Original CSS: width: 0.8rem; height: 0.8rem; margin-left: 4px;
+            // Assuming 1rem = 16px, so 0.8rem = 12.8px. Let's try with 13px or 12px.
+            // html2canvas might handle sub-pixel rendering differently.
+            fbPostMetaIcon.css({
+              'width': '12px', // Explicit px
+              'height': '12px', // Explicit px
+              'margin-left': '4px', // Already in px, ensure it's applied
+              'vertical-align': 'middle' // Ensure consistent vertical alignment
             });
-          $(clonedDoc)
-            .find(".fb-sprite-icon")
-            .each(function (index, divElement) {
-              console.log(
-                `Cloned .fb-sprite-icon ${index} background-image: <span class="math-inline">\{</span>(divElement).css('background-image')}`
-              );
+            console.log('html2canvas: Applied explicit styles to FB post meta icon.');
+          }
+
+          // 2. Fix for the "like" icon before the like count in Facebook posts
+          // This is the SVG with gradients, direct child of the stats div's first child.
+          const fbLikeCountIcon = $(clonedDoc).find('#facebook-post-preview .stats > div:first-child > svg');
+          if (fbLikeCountIcon.length) {
+            // Original HTML: height="18" width="18" class="me-1" style="vertical-align: text-bottom"
+            // me-1 is likely 0.25rem (4px) or 0.5rem (8px) margin-right. Let's assume 4px.
+            // The `vertical-align: text-bottom` can be tricky.
+            fbLikeCountIcon.css({
+              'width': '18px', // Already in px via attribute
+              'height': '18px', // Already in px via attribute
+              'vertical-align': 'middle', // Try a more standard alignment
+              'margin-right': '2px', // Explicitly set margin, adjust if needed (original me-1)
+              // 'position': 'relative', // Uncomment and adjust 'top' if vertical-align doesn't fix it
+              // 'top': '1px'
             });
+            console.log('html2canvas: Applied explicit styles to FB like count icon.');
+          }
+          
+          // --- END SVG POSITIONING FIXES ---
+
+          console.log("html2canvas: onclone finished processing URLs and SVG tweaks.");
         }
       })
         .then((canvas) => {
+          console.log("html2canvas: Canvas generated successfully.");
           const image = canvas.toDataURL("image/png");
           const link = document.createElement("a");
           link.href = image;
@@ -292,12 +376,14 @@ $(document).ready(function () {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
+          console.log("html2canvas: Image download initiated.");
         })
         .catch(function (error) {
-          console.error("oops, something went wrong!", error);
+          console.error("html2canvas: Error during canvas generation or download.", error);
           // 在這裡處理錯誤，例如提示使用者截圖失敗
+          alert("截圖失敗，請檢查瀏覽器控制台獲取更多資訊。");
         });
-    }, 300); // 初始延遲 300 毫秒
+    }, 1000); // 增加延遲到 1000 毫秒
   });
 
   switchPlatform(currentPlatform);
