@@ -7,12 +7,16 @@ body {
 .input-section {
   height: 100vh;
   overflow-y: auto;
+  flex-shrink: 0; /* Prevent shrinking */
+  flex-basis: 100%; /* Default, like w-full */
 }
 .preview-section {
   height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; /* Restored to flex */
+  align-items: center; /* Vertical center */
+  justify-content: center; /* Horizontal center */
+  flex-shrink: 0; /* Prevent shrinking */
+  flex-basis: 100%; /* Default, like w-full */
   background-color: #f0f2f5;
   transition: background-color 0.3s ease;
 }
@@ -257,4 +261,36 @@ body {
 }
 .hidden-input-container {
   display: none;
+}
+
+/* Specific style for Twitter options icon */
+#twitter-post-preview .flex-grow-1 > .d-flex.justify-content-between > svg.svg-icon {
+  width: 1.25rem !important; /* 20px, consistent with w-5 */
+  height: 1.25rem !important; /* 20px, consistent with h-5 */
+}
+/* Fix for profile picture sizes after library updates */
+#fb-profile-pic,
+#th-profile-pic {
+  width: 2.5rem !important; /* 40px */
+  height: 2.5rem !important; /* 40px */
+}
+
+#tw-profile-pic {
+  width: 3rem !important; /* 48px */
+  height: 3rem !important; /* 48px */
+}
+
+/* Ensure profile pics in the input form also have a defined size */
+#profile-pic-display {
+  width: 3rem !important; /* 48px, consistent with Twitter preview */
+  height: 3rem !important; /* 48px */
+}
+
+@media (min-width: 768px) { /* Tailwind's default md breakpoint */
+  .input-section {
+    flex-basis: 33.333333% !important; /* Like md:w-1/3, ensure it overrides */
+  }
+  .preview-section {
+    flex-basis: 66.666667% !important; /* Like md:w-2/3, ensure it overrides */
+  }
 }

@@ -83,8 +83,48 @@ $(document).ready(function () {
       $(`#tw-likes-count .count-val`).text(formatNumber(likesVal));
       $(`#tw-views-count .count-val`).text(formatNumber(viewsVal));
     } else if (currentPlatform === "threads") {
+      let threadsStatsHtml = `${formatNumber(commentsVal)} 則回覆 <span class="stat-separator">·</span> ${formatNumber(likesVal)} 個讚`;
+      const sharesText = `${formatNumber(sharesVal)} 次轉發`;
+      const viewsText = `${formatNumber(viewsVal)} 次查看`;
+
+      // Only add shares and views if they have a value, to keep it cleaner if not used
+      // And ensure the new spans are visible
+      if (sharesVal > 0 || $("#shares").val() !== "0") { // Check input value too in case of 0
+        threadsStatsHtml += ` <span class="stat-separator">·</span> <span id="th-shares-count-val">${sharesText}</span>`;
+        $("#th-shares-count").show(); // Ensure the container span is visible
+      } else {
+        $("#th-shares-count").hide();
+      }
+
+      if (viewsVal > 0 || $("#views").val() !== "0") {
+        threadsStatsHtml += ` <span class="stat-separator">·</span> <span id="th-views-count-val">${viewsText}</span>`;
+        $("#th-views-count").show(); // Ensure the container span is visible
+      } else {
+        $("#th-views-count").hide();
+      }
+      
+      // It seems I added th-shares-count and th-views-count as main containers in HTML.
+      // Let's adjust to populate them directly if they are meant to be individual items.
+      // Original HTML for Threads stats:
+      // <span id="th-comments-count"></span> <span class="stat-separator">·</span> <span id="th-likes-count"></span>
+      // New HTML:
+      // ... <span id="th-shares-count"></span> <span id="th-views-count"></span>
+      // The JS should populate these spans directly.
+
       $(`#th-comments-count`).text(`${formatNumber(commentsVal)} 則回覆`);
       $(`#th-likes-count`).text(`${formatNumber(likesVal)} 個讚`);
+
+      if (sharesVal > 0 || $("#shares").val() !== "" && parseInt($("#shares").val()) !== 0) {
+        $("#th-shares-count").html(`<span class="stat-separator">·</span> ${sharesText}`).show();
+      } else {
+        $("#th-shares-count").hide().empty();
+      }
+
+      if (viewsVal > 0 || $("#views").val() !== "" && parseInt($("#views").val()) !== 0) {
+        $("#th-views-count").html(`<span class="stat-separator">·</span> ${viewsText}`).show();
+      } else {
+        $("#th-views-count").hide().empty();
+      }
     }
   }
 
