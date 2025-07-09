@@ -218,13 +218,21 @@ body {
   font-size: 0.9375rem;
   color: #737373;
 }
-.threads-post .stats .stat-item {
+.threads-post .post-header .stat-item {
   font-size: 0.9375rem;
   color: #737373;
 }
 .threads-post .stats .stat-separator {
   margin: 0 6px;
   color: #c7c7c7;
+}
+.threads-post .actions .button {
+  color: #000000;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  padding: 8px 4px;
+  display: flex;
+  align-items: center;
 }
 .threads-post .actions .svg-icon {
   width: 22px;
@@ -264,7 +272,10 @@ body {
 }
 
 /* Specific style for Twitter options icon */
-#twitter-post-preview .flex-grow-1 > .d-flex.justify-content-between > svg.svg-icon {
+#twitter-post-preview
+  .flex-grow-1
+  > .d-flex.justify-content-between
+  > svg.svg-icon {
   width: 1.25rem !important; /* 20px, consistent with w-5 */
   height: 1.25rem !important; /* 20px, consistent with h-5 */
 }
@@ -286,7 +297,8 @@ body {
   height: 3rem !important; /* 48px */
 }
 
-@media (min-width: 768px) { /* Tailwind's default md breakpoint */
+@media (min-width: 768px) {
+  /* Tailwind's default md breakpoint */
   .input-section {
     flex-basis: 33.333333% !important; /* Like md:w-1/3, ensure it overrides */
   }

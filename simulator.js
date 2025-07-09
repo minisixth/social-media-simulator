@@ -83,26 +83,31 @@ $(document).ready(function () {
       $(`#tw-likes-count .count-val`).text(formatNumber(likesVal));
       $(`#tw-views-count .count-val`).text(formatNumber(viewsVal));
     } else if (currentPlatform === "threads") {
-      let threadsStatsHtml = `${formatNumber(commentsVal)} 則回覆 <span class="stat-separator">·</span> ${formatNumber(likesVal)} 個讚`;
-      const sharesText = `${formatNumber(sharesVal)} 次轉發`;
-      const viewsText = `${formatNumber(viewsVal)} 次查看`;
+      let threadsStatsHtml = `${formatNumber(
+        commentsVal
+      )} 則回覆 <span class="stat-separator">·</span> ${formatNumber(
+        likesVal
+      )} 個讚`;
+      const sharesText = `${formatNumber(sharesVal)}`;
+      const viewsText = `${formatNumber(viewsVal)} 次瀏覽 `;
 
       // Only add shares and views if they have a value, to keep it cleaner if not used
       // And ensure the new spans are visible
-      if (sharesVal > 0 || $("#shares").val() !== "0") { // Check input value too in case of 0
-        threadsStatsHtml += ` <span class="stat-separator">·</span> <span id="th-shares-count-val">${sharesText}</span>`;
-        $("#th-shares-count").show(); // Ensure the container span is visible
+      if (sharesVal > 0 || $("#shares").val() !== "0") {
+        // Check input value too in case of 0
+        threadsStatsHtml += ` <span class="stat-separator"></span> <span id="th-shares-count-val">${sharesText}</span>`;
+        $("shares-count").show(); // Ensure the container span is visible
       } else {
         $("#th-shares-count").hide();
       }
 
       if (viewsVal > 0 || $("#views").val() !== "0") {
-        threadsStatsHtml += ` <span class="stat-separator">·</span> <span id="th-views-count-val">${viewsText}</span>`;
+        threadsStatsHtml += ` <span class="stat-separator">串文</span> <span id="th-views-count-val">${viewsText}</span>`;
         $("#th-views-count").show(); // Ensure the container span is visible
       } else {
         $("#th-views-count").hide();
       }
-      
+
       // It seems I added th-shares-count and th-views-count as main containers in HTML.
       // Let's adjust to populate them directly if they are meant to be individual items.
       // Original HTML for Threads stats:
@@ -111,17 +116,27 @@ $(document).ready(function () {
       // ... <span id="th-shares-count"></span> <span id="th-views-count"></span>
       // The JS should populate these spans directly.
 
-      $(`#th-comments-count`).text(`${formatNumber(commentsVal)} 則回覆`);
-      $(`#th-likes-count`).text(`${formatNumber(likesVal)} 個讚`);
+      $(`#th-comments-count`).text(`${formatNumber(commentsVal)}`);
+      $(`#th-likes-count`).text(`${formatNumber(likesVal)} `);
 
-      if (sharesVal > 0 || $("#shares").val() !== "" && parseInt($("#shares").val()) !== 0) {
-        $("#th-shares-count").html(`<span class="stat-separator">·</span> ${sharesText}`).show();
+      if (
+        sharesVal > 0 ||
+        ($("#shares").val() !== "" && parseInt($("#shares").val()) !== 0)
+      ) {
+        $("#th-shares-count").html(`${sharesText}`).show();
       } else {
         $("#th-shares-count").hide().empty();
       }
 
-      if (viewsVal > 0 || $("#views").val() !== "" && parseInt($("#views").val()) !== 0) {
-        $("#th-views-count").html(`<span class="stat-separator">·</span> ${viewsText}`).show();
+      if (
+        viewsVal > 0 ||
+        ($("#views").val() !== "" && parseInt($("#views").val()) !== 0)
+      ) {
+        $("#th-views-count")
+          .html(
+            `<span class="stat-separator" style="color: black; font-weight: bold;">串文</span></br> ${viewsText}`
+          )
+          .show();
       } else {
         $("#th-views-count").hide().empty();
       }
@@ -229,15 +244,20 @@ $(document).ready(function () {
   $("#set-random-time").click(function () {
     const times = [
       "剛剛",
+      "3 分鐘",
       "5 分鐘",
+      "10 分鐘",
       "15 分鐘",
+      "30 分鐘",
       "1 小時",
       "3 小時",
+      "5 小時",
+      "6 小時",
+      "8 小時",
+      "昨天 早上08:30",
       "昨天 晚上10:30",
-      "5月10日",
-      "4月22日 下午3:15",
-      "12月25日",
-      "2024年1月1日"
+      "7月10日",
+      "7月12日"
     ];
     $("#post-time")
       .val(times[Math.floor(Math.random() * times.length)])
@@ -309,12 +329,20 @@ $(document).ready(function () {
 
           // Helper function to convert relative URL to absolute
           function toAbsoluteURL(url) {
-            if (url && !url.startsWith('data:') && !url.startsWith('http') && !url.startsWith('blob:')) {
+            if (
+              url &&
+              !url.startsWith("data:") &&
+              !url.startsWith("http") &&
+              !url.startsWith("blob:")
+            ) {
               try {
                 // Create a URL object relative to the document's base URL
                 return new URL(url, base).href;
               } catch (e) {
-                console.warn(`html2canvas: Could not convert to absolute URL: ${url}`, e);
+                console.warn(
+                  `html2canvas: Could not convert to absolute URL: ${url}`,
+                  e
+                );
                 return url; // Fallback to original if conversion fails
               }
             }
@@ -322,89 +350,136 @@ $(document).ready(function () {
           }
 
           // Process <img> tags
-          $(clonedDoc).find("img").each(function (index, imgElement) {
-            const $img = $(imgElement);
-            let originalSrc = $img.attr('src');
-            if (originalSrc) {
-              let absoluteSrc = toAbsoluteURL(originalSrc);
-              if (absoluteSrc !== originalSrc) {
-                $img.attr('src', absoluteSrc);
-                console.log(`html2canvas: Cloned img[${index}] src updated from "${originalSrc ? originalSrc.substring(0,60) : 'null'}" to "${absoluteSrc ? absoluteSrc.substring(0,60) : 'null'}"`);
+          $(clonedDoc)
+            .find("img")
+            .each(function (index, imgElement) {
+              const $img = $(imgElement);
+              let originalSrc = $img.attr("src");
+              if (originalSrc) {
+                let absoluteSrc = toAbsoluteURL(originalSrc);
+                if (absoluteSrc !== originalSrc) {
+                  $img.attr("src", absoluteSrc);
+                  console.log(
+                    `html2canvas: Cloned img[${index}] src updated from "${
+                      originalSrc ? originalSrc.substring(0, 60) : "null"
+                    }" to "${
+                      absoluteSrc ? absoluteSrc.substring(0, 60) : "null"
+                    }"`
+                  );
+                } else {
+                  console.log(
+                    `html2canvas: Cloned img[${index}] src (already absolute or data/blob): "${
+                      originalSrc ? originalSrc.substring(0, 60) : "null"
+                    }"`
+                  );
+                }
               } else {
-                console.log(`html2canvas: Cloned img[${index}] src (already absolute or data/blob): "${originalSrc ? originalSrc.substring(0,60) : 'null'}"`);
+                console.log(`html2canvas: Cloned img[${index}] has no src.`);
               }
-            } else {
-               console.log(`html2canvas: Cloned img[${index}] has no src.`);
-            }
-          });
+            });
 
           // Process elements with background-image, specifically .fb-sprite-icon
-          $(clonedDoc).find("*").filter(function() {
-            return $(this).css('background-image') !== 'none';
-          }).each(function (index, element) {
-            const $el = $(element);
-            let originalBgImage = $el.css('background-image');
-            
-            // Extract URL from 'url("...")'
-            const urlMatch = originalBgImage.match(/url\("?([^"]+)"?\)/);
-            if (urlMatch && urlMatch[1]) {
-              let originalUrl = urlMatch[1];
-              let absoluteUrl = toAbsoluteURL(originalUrl);
+          $(clonedDoc)
+            .find("*")
+            .filter(function () {
+              return $(this).css("background-image") !== "none";
+            })
+            .each(function (index, element) {
+              const $el = $(element);
+              let originalBgImage = $el.css("background-image");
 
-              if (absoluteUrl !== originalUrl) {
-                let newBgImage = originalBgImage.replace(originalUrl, absoluteUrl);
-                $el.css('background-image', newBgImage);
-                console.log(`html2canvas: Element[${index}] bg-image updated from "${originalUrl.substring(0,60)}" to "${absoluteUrl.substring(0,60)}"`);
-              } else {
-                 console.log(`html2canvas: Element[${index}] bg-image URL (already absolute or data/blob): "${originalUrl.substring(0,60)}"`);
-              }
+              // Extract URL from 'url("...")'
+              const urlMatch = originalBgImage.match(/url\("?([^"]+)"?\)/);
+              if (urlMatch && urlMatch[1]) {
+                let originalUrl = urlMatch[1];
+                let absoluteUrl = toAbsoluteURL(originalUrl);
 
-              if ($el.hasClass('fb-sprite-icon')) {
-                const currentBgSize = $el.css('background-size');
-                $el.css('background-size', currentBgSize && currentBgSize !== '0px 0px' ? currentBgSize : 'auto');
-                console.log(`html2canvas: Ensured background-size: ${$el.css('background-size')} for fb-sprite-icon[${index}]`);
+                if (absoluteUrl !== originalUrl) {
+                  let newBgImage = originalBgImage.replace(
+                    originalUrl,
+                    absoluteUrl
+                  );
+                  $el.css("background-image", newBgImage);
+                  console.log(
+                    `html2canvas: Element[${index}] bg-image updated from "${originalUrl.substring(
+                      0,
+                      60
+                    )}" to "${absoluteUrl.substring(0, 60)}"`
+                  );
+                } else {
+                  console.log(
+                    `html2canvas: Element[${index}] bg-image URL (already absolute or data/blob): "${originalUrl.substring(
+                      0,
+                      60
+                    )}"`
+                  );
+                }
+
+                if ($el.hasClass("fb-sprite-icon")) {
+                  const currentBgSize = $el.css("background-size");
+                  $el.css(
+                    "background-size",
+                    currentBgSize && currentBgSize !== "0px 0px"
+                      ? currentBgSize
+                      : "auto"
+                  );
+                  console.log(
+                    `html2canvas: Ensured background-size: ${$el.css(
+                      "background-size"
+                    )} for fb-sprite-icon[${index}]`
+                  );
+                }
               }
-            }
-          });
+            });
 
           // --- BEGIN SVG POSITIONING FIXES ---
 
           // 1. Fix for the "globe" icon after the timestamp in Facebook posts
-          const fbPostMetaIcon = $(clonedDoc).find('#facebook-post-preview .post-meta .svg-icon');
+          const fbPostMetaIcon = $(clonedDoc).find(
+            "#facebook-post-preview .post-meta .svg-icon"
+          );
           if (fbPostMetaIcon.length) {
             // Original CSS: width: 0.8rem; height: 0.8rem; margin-left: 4px;
             // Assuming 1rem = 16px, so 0.8rem = 12.8px. Let's try with 13px or 12px.
             // html2canvas might handle sub-pixel rendering differently.
             fbPostMetaIcon.css({
-              'width': '12px', // Explicit px
-              'height': '12px', // Explicit px
-              'margin-left': '4px', // Already in px, ensure it's applied
-              'vertical-align': 'middle' // Ensure consistent vertical alignment
+              width: "12px", // Explicit px
+              height: "12px", // Explicit px
+              "margin-left": "4px", // Already in px, ensure it's applied
+              "vertical-align": "middle" // Ensure consistent vertical alignment
             });
-            console.log('html2canvas: Applied explicit styles to FB post meta icon.');
+            console.log(
+              "html2canvas: Applied explicit styles to FB post meta icon."
+            );
           }
 
           // 2. Fix for the "like" icon before the like count in Facebook posts
           // This is the SVG with gradients, direct child of the stats div's first child.
-          const fbLikeCountIcon = $(clonedDoc).find('#facebook-post-preview .stats > div:first-child > svg');
+          const fbLikeCountIcon = $(clonedDoc).find(
+            "#facebook-post-preview .stats > div:first-child > svg"
+          );
           if (fbLikeCountIcon.length) {
             // Original HTML: height="18" width="18" class="me-1" style="vertical-align: text-bottom"
             // me-1 is likely 0.25rem (4px) or 0.5rem (8px) margin-right. Let's assume 4px.
             // The `vertical-align: text-bottom` can be tricky.
             fbLikeCountIcon.css({
-              'width': '18px', // Already in px via attribute
-              'height': '18px', // Already in px via attribute
-              'vertical-align': 'middle', // Try a more standard alignment
-              'margin-right': '2px', // Explicitly set margin, adjust if needed (original me-1)
+              width: "18px", // Already in px via attribute
+              height: "18px", // Already in px via attribute
+              "vertical-align": "middle", // Try a more standard alignment
+              "margin-right": "2px" // Explicitly set margin, adjust if needed (original me-1)
               // 'position': 'relative', // Uncomment and adjust 'top' if vertical-align doesn't fix it
               // 'top': '1px'
             });
-            console.log('html2canvas: Applied explicit styles to FB like count icon.');
+            console.log(
+              "html2canvas: Applied explicit styles to FB like count icon."
+            );
           }
-          
+
           // --- END SVG POSITIONING FIXES ---
 
-          console.log("html2canvas: onclone finished processing URLs and SVG tweaks.");
+          console.log(
+            "html2canvas: onclone finished processing URLs and SVG tweaks."
+          );
         }
       })
         .then((canvas) => {
@@ -419,7 +494,10 @@ $(document).ready(function () {
           console.log("html2canvas: Image download initiated.");
         })
         .catch(function (error) {
-          console.error("html2canvas: Error during canvas generation or download.", error);
+          console.error(
+            "html2canvas: Error during canvas generation or download.",
+            error
+          );
           // 在這裡處理錯誤，例如提示使用者截圖失敗
           alert("截圖失敗，請檢查瀏覽器控制台獲取更多資訊。");
         });
